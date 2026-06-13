@@ -57,7 +57,7 @@ export function DefinitionsClient() {
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="relative max-w-2xl flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search RAG, hallucination, agents, embeddings, prompt injection..." className="pl-10" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search MCP, RAG, agents, embeddings, prompt injection..." className="pl-10" />
           </div>
           <div className="flex flex-wrap gap-2">
             {(["All", ...definitionCategories] as const).map((item) => (
