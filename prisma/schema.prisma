@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String              @id @default(cuid())
+  name               String
+  email              String              @unique
+  role               String              @default("LEARNER")
+  title              String
+  departmentId       String
+  department         Department          @relation(fields: [departmentId], references: [id])
+  progress           ModuleProgress[]
+  promptAttempts     PromptAttempt[]
+  useCases           UseCase[]
+  championProfile    ChampionProfile?
+  tutorConversations TutorConversation[]
+  createdAt          DateTime            @default(now())
+}
+
+model Department {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  users     User[]
+  useCases  UseCase[]
+  metrics   AdoptionMetric[]
+}
+
+model LearningModule {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  title       String
+  level       String
+  duration    Int
+  summary     String
+  content     String
+  examples    String
+  takeaways   String
+  lessons     Lesson[]
+  quiz        Quiz?
+  progress    ModuleProgress[]
+  createdAt   DateTime         @default(now())
+}
+
+model Lesson {
+  id        String         @id @default(cuid())
+  title     String
+  body      String
+  order     Int
+  moduleId  String
+  module    LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id        String         @id @default(cuid())
+  moduleId  String         @unique
+  module    LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+}
+
+model QuizQuestion {
+  id       String @id @default(cuid())
+  prompt   String
+  options  String
+  answer   String
+  quizId   String
+  quiz     Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model ModuleProgress {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId    String
+  module      LearningModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  percent     Int
+  completedAt DateTime?
+
+  @@unique([userId, moduleId])
+}
+
+model PromptExercise {
+  id          String          @id @default(cuid())
+  title       String
+  scenario    String
+  weakPrompt  String
+  rubric      String
+  attempts    PromptAttempt[]
+  createdAt   DateTime        @default(now())
+}
+
+model PromptAttempt {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    PromptExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  prompt      String
+  clarity     Int
+  context     Int
+  constraints Int
+  safety      Int
+  format      Int
+  feedback    String
+  createdAt   DateTime       @default(now())
+}
+
+model PlaybookEntry {
+  id        String      @id @default(cuid())
+  title     String
+  type      String
+  audience  String
+  summary   String
+  body      String
+  tags      String
+  createdAt DateTime    @default(now())
+}
+
+model UseCase {
+  id                String          @id @default(cuid())
+  title             String
+  departmentId      String
+  department        Department      @relation(fields: [departmentId], references: [id])
+  submitterId       String
+  submitter         User            @relation(fields: [submitterId], references: [id])
+  currentWorkflow   String
+  painPoint         String
+  timeSpentPerWeek  Int
+  dataSensitivity   String
+  expectedBenefit   String
+  feasibilityNotes  String
+  impactScore       Int
+  feasibilityScore  Int
+  riskLevel         String
+  suggestedNextStep String
+  status            String          @default("NEW")
+  createdAt         DateTime        @default(now())
+}
+
+model ChampionProfile {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialty     String
+  bio           String
+  successStory  String
+  officeHours   OfficeHour[]
+}
+
+model OfficeHour {
+  id          String          @id @default(cuid())
+  topic       String
+  startsAt    DateTime
+  format      String
+  championId  String
+  champion    ChampionProfile @relation(fields: [championId], references: [id], onDelete: Cascade)
+}
+
+model SuccessStory {
+  id                    String   @id @default(cuid())
+  title                 String
+  department            String
+  beforeWorkflow        String
+  afterWorkflow         String
+  hoursSaved            Int
+  qualityImprovement    String
+  cycleTimeReduction    String
+  employeeSatisfaction  String
+  createdAt             DateTime @default(now())
+}
+
+model TutorConversation {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  messages  TutorMessage[]
+  createdAt DateTime       @default(now())
+}
+
+model TutorMessage {
+  id             String            @id @default(cuid())
+  conversationId String
+  conversation   TutorConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  createdAt      DateTime          @default(now())
+}
+
+model AdoptionMetric {
+  id                           String     @id @default(cuid())
+  date                         DateTime
+  departmentId                 String
+  department                   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  activeUsers                  Int
+  moduleCompletions            Int
+  promptAttempts               Int
+  tutorConversations           Int
+  useCasesSubmitted            Int
+  useCasesAdopted              Int
+  estimatedHoursSaved          Int
+  satisfactionScore            Float
+  responsibleAiCompletionRate  Int
+}

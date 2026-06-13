@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 33% 97%;
+  --foreground: 225 52% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 225 52% 9%;
+  --primary: 221 89% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 190 95% 48%;
+  --secondary-foreground: 225 52% 9%;
+  --muted: 218 28% 92%;
+  --muted-foreground: 218 11% 39%;
+  --accent: 191 94% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 18% 84%;
+  --input: 214 18% 84%;
+  --ring: 221 89% 52%;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+  letter-spacing: 0;
+}
+
+a {
+  @apply transition-colors;
+}
+
+.prose-lite h1,
+.prose-lite h2,
+.prose-lite h3 {
+  @apply mb-2 mt-6 font-semibold text-slate-950;
+}
+
+.prose-lite p,
+.prose-lite li {
+  @apply text-sm leading-7 text-slate-700;
+}
+
+.prose-lite ul,
+.prose-lite ol {
+  @apply ml-5 list-disc space-y-1;
+}
+
+.prose-lite table {
+  @apply my-4 w-full overflow-hidden rounded-lg border text-sm;
+}
+
+.prose-lite th {
+  @apply bg-slate-950 px-3 py-2 text-left font-semibold text-white;
+}
+
+.prose-lite td {
+  @apply border-t px-3 py-2 text-slate-700;
+}
+
+.prose-lite code {
+  @apply rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-900;
+}
+
+.prose-lite pre {
+  @apply my-4 overflow-auto rounded-lg bg-slate-950 p-4 text-sm text-slate-100;
+}
+
+.prose-lite pre code {
+  @apply bg-transparent p-0 text-slate-100;
+}
