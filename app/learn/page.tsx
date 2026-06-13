@@ -3,10 +3,10 @@ import { ArrowRight, ScrollText } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { prisma } from "@/lib/prisma";
+import { getLearningModules } from "@/lib/data";
 
 export default async function LearnPage() {
-  const modules = await prisma.learningModule.findMany({ orderBy: { createdAt: "asc" } });
+  const modules = (await getLearningModules()) as any[];
   return (
     <PageShell title="Learning Modules" description="Structured, beginner-friendly lessons covering AI foundations, prompt engineering, RAG, agents, workflow automation, and responsible use.">
       <Link href="/definitions" className="mb-5 flex items-center justify-between gap-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 hover:border-blue-400">

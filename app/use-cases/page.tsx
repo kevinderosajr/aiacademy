@@ -1,14 +1,11 @@
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { prisma } from "@/lib/prisma";
+import { getUseCasePageData } from "@/lib/data";
 import { UseCaseClient } from "./use-case-client";
 
 export default async function UseCasesPage() {
-  const [departments, useCases] = await Promise.all([
-    prisma.department.findMany({ orderBy: { name: "asc" } }),
-    prisma.useCase.findMany({ include: { department: true }, orderBy: { createdAt: "desc" }, take: 10 })
-  ]);
+  const [departments, useCases] = (await getUseCasePageData()) as [any[], any[]];
   return (
     <PageShell title="Use Case Discovery" description="A structured intake flow for identifying workflow automation opportunities and routing them through impact, feasibility, and risk review.">
       <UseCaseClient departments={departments.map((d) => d.name)} />

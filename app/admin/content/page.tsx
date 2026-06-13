@@ -1,15 +1,10 @@
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+import { getAdminContentCounts } from "@/lib/data";
 import { AdminContentClient } from "./admin-content-client";
 
 export default async function AdminContentPage() {
-  const [modules, playbook, exercises, stories] = await Promise.all([
-    prisma.learningModule.count(),
-    prisma.playbookEntry.count(),
-    prisma.promptExercise.count(),
-    prisma.successStory.count()
-  ]);
+  const [modules, playbook, exercises, stories] = await getAdminContentCounts();
   return (
     <PageShell title="Admin Content" description="Simple content management for modules, playbook entries, prompt exercises, FAQs, and success stories.">
       <div className="mb-6 grid gap-4 md:grid-cols-4">

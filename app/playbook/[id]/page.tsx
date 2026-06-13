@@ -5,11 +5,11 @@ import { ArrowLeft, BookOpen, ShieldCheck } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
+import { getPlaybookEntry } from "@/lib/data";
 
 export default async function PlaybookEntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const entry = await prisma.playbookEntry.findUnique({ where: { id } });
+  const entry = await getPlaybookEntry(id);
   if (!entry) notFound();
 
   return (

@@ -1,10 +1,10 @@
 import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetricCard } from "@/components/metric-card";
-import { prisma } from "@/lib/prisma";
+import { getSuccessStories } from "@/lib/data";
 
 export default async function SuccessStoriesPage() {
-  const stories = await prisma.successStory.findMany({ orderBy: { hoursSaved: "desc" } });
+  const stories = (await getSuccessStories()) as any[];
   const total = stories.reduce((sum, story) => sum + story.hoursSaved, 0);
   return (
     <PageShell title="Success Stories" description="Synthetic before-and-after examples showing how AI enablement can reduce repetitive work and improve quality.">

@@ -2,10 +2,10 @@ import { PageShell } from "@/components/page-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input, Textarea } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
+import { getChampions } from "@/lib/data";
 
 export default async function ChampionsPage() {
-  const champions = await prisma.championProfile.findMany({ include: { user: { include: { department: true } }, officeHours: true } });
+  const champions = (await getChampions()) as any[];
   return (
     <PageShell title="Champions Circle" description="Internal AI champions who coach peers, host office hours, share success stories, and turn ideas into safe experiments.">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
