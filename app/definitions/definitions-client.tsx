@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CheckCircle2, Lightbulb, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +25,8 @@ export function DefinitionsClient() {
   const [activeStageId, setActiveStageId] = useState<ActiveStage>(aiMaturityStages[0].id);
   const [expanded, setExpanded] = useState<string>(aiDefinitions[0].term);
   const [reviewed, setReviewed] = useState<Set<string>>(new Set([aiDefinitions[0].term]));
+  const [storageKey, setStorageKey] = useState("ai-academy-reviewed-terms");
+  const [hasLoadedProgress, setHasLoadedProgress] = useState(false);
 
   const definitionsByTerm = useMemo(() => new Map(aiDefinitions.map((definition) => [definition.term, definition])), []);
   const activeStage = aiMaturityStages.find((stage) => stage.id === activeStageId);
@@ -60,6 +62,33 @@ export function DefinitionsClient() {
     setExpanded((current) => (current === term ? "" : term));
     setReviewed((current) => new Set(current).add(term));
   };
+
+  useEffect(() => {
+    const session = window.localStorage.getItem("ai-academy-session");
+    let username: string | undefined;
+    try {
+      username = session ? (JSON.parse(session).username as string | undefined) : undefined;
+    } catch {
+      username = undefined;
+    }
+    const key = username ? `ai-academy-reviewed-terms:${username}` : "ai-academy-reviewed-terms";
+    const saved = window.localStorage.getItem(key);
+    setStorageKey(key);
+    if (saved) {
+      try {
+        const terms = JSON.parse(saved) as string[];
+        setReviewed(new Set([aiDefinitions[0].term, ...terms]));
+      } catch {
+        setReviewed(new Set([aiDefinitions[0].term]));
+      }
+    }
+    setHasLoadedProgress(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedProgress) return;
+    window.localStorage.setItem(storageKey, JSON.stringify(Array.from(reviewed)));
+  }, [hasLoadedProgress, reviewed, storageKey]);
 
   const nextStage = () => {
     if (activeStageIndex >= 0 && activeStageIndex < aiMaturityStages.length - 1) {
