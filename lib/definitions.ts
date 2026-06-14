@@ -96,6 +96,22 @@ export const aiDefinitions: AiDefinition[] = [
     workplaceExample: "Use lower temperature for policy summaries and higher temperature for naming ideas."
   },
   {
+    term: "Structured Output",
+    category: "Prompting",
+    technical: "Model output constrained to a predictable format such as JSON, tables, fields, or a schema so software can parse it reliably.",
+    plain: "AI answers in a clean format that another system can use.",
+    analogy: "Like asking someone to fill out a form instead of writing a freeform paragraph.",
+    workplaceExample: "Have AI return a use-case title, department, risk level, and suggested next step as structured fields."
+  },
+  {
+    term: "Context Engineering",
+    category: "Prompting",
+    technical: "The practice of designing the full information environment around a model, including instructions, retrieved sources, tools, memory, examples, and state.",
+    plain: "Setting up everything the AI needs around the prompt, not just writing the prompt itself.",
+    analogy: "Like preparing a full project room with files, tools, rules, and examples before bringing in a teammate.",
+    workplaceExample: "Combine a system prompt, approved policy retrieval, department context, and output schema for a reliable assistant."
+  },
+  {
     term: "Context Window",
     category: "Foundations",
     technical: "The maximum amount of input and conversation history a model can consider at one time, usually measured in tokens.",
@@ -153,6 +169,41 @@ export const aiDefinitions: AiDefinition[] = [
     plain: "The AI app that can use MCP-connected tools.",
     analogy: "Like the employee who has access badges to approved rooms, but only through controlled doors.",
     workplaceExample: "A coding assistant connects to a browser MCP server to test a local web app."
+  },
+  {
+    term: "MCP Tool",
+    category: "Automation",
+    technical: "A callable capability exposed by an MCP server that lets an AI client request a specific action, such as searching files, querying a database, or opening a browser.",
+    plain: "A specific action the AI is allowed to ask a connected system to perform.",
+    analogy: "Like a button on a control panel: each button does one approved thing.",
+    workplaceExample: "An MCP tool lets an AI assistant search approved policy documents without giving it full system access.",
+    safetyNote: "MCP tools should be narrowly scoped, logged, and protected with least-privilege permissions."
+  },
+  {
+    term: "MCP Resource",
+    category: "Automation",
+    technical: "A readable piece of context exposed by an MCP server, such as a file, document, schema, dataset, or application state.",
+    plain: "Approved information the AI can read through an MCP connection.",
+    analogy: "Like a reference binder at a help desk: useful information, but not permission to take action.",
+    workplaceExample: "An MCP resource exposes a database schema so an AI assistant can understand table names before suggesting a query.",
+    safetyNote: "Resources can still contain sensitive data, so access controls matter."
+  },
+  {
+    term: "MCP Prompt",
+    category: "Automation",
+    technical: "A reusable prompt template exposed by an MCP server for a specific workflow, tool, or domain.",
+    plain: "A prebuilt instruction template the AI can use for a known task.",
+    analogy: "Like a standard operating procedure form that keeps everyone asking in the same safe format.",
+    workplaceExample: "A support MCP server provides a standard prompt for summarizing customer escalations."
+  },
+  {
+    term: "Connector",
+    category: "Automation",
+    technical: "An integration layer that links an AI system or application to an external data source, tool, workflow, or service.",
+    plain: "A bridge between AI and another system.",
+    analogy: "Like a secure hallway between two buildings.",
+    workplaceExample: "A connector links the AI Academy to approved playbook content, file search, or ticketing workflows.",
+    safetyNote: "Connectors should be reviewed for what they can read, write, and trigger."
   },
   {
     term: "Embedding",
@@ -372,6 +423,24 @@ export const aiDefinitions: AiDefinition[] = [
     workplaceExample: "AI can draft a customer email, but a support lead must approve it before sending."
   },
   {
+    term: "Memory",
+    category: "Automation",
+    technical: "Stored information from prior interactions or user preferences that an AI system can use in future responses or workflows.",
+    plain: "Things the AI remembers for later.",
+    analogy: "Like notes a teammate keeps so you do not have to repeat yourself every meeting.",
+    workplaceExample: "An assistant remembers that a user is working through the Agentic Builder level and recommends the next lesson.",
+    safetyNote: "Memory needs transparency, edit controls, and limits on sensitive information."
+  },
+  {
+    term: "Audit Log",
+    category: "Safety",
+    technical: "A record of system activity, including user actions, model outputs, tool calls, approvals, and changes made during an AI workflow.",
+    plain: "A trail of what happened, who did it, and what the AI touched.",
+    analogy: "Like a security camera and sign-in sheet for AI-assisted work.",
+    workplaceExample: "Log when an agent retrieved a document, drafted an email, and waited for approval.",
+    safetyNote: "Audit logs are essential for troubleshooting, compliance, and incident review."
+  },
+  {
     term: "Model Evaluation",
     category: "Evaluation",
     technical: "The process of measuring model performance against criteria such as accuracy, helpfulness, safety, robustness, latency, and cost.",
@@ -511,7 +580,9 @@ export const aiMaturityStages: AiMaturityStage[] = [
       "System Prompt",
       "Few-Shot Prompting",
       "Chain-of-Thought",
-      "Temperature"
+      "Temperature",
+      "Structured Output",
+      "Context Engineering"
     ]
   },
   {
@@ -551,7 +622,8 @@ export const aiMaturityStages: AiMaturityStage[] = [
       "Jailbreak",
       "Red Teaming",
       "Least Privilege",
-      "Human-in-the-Loop"
+      "Human-in-the-Loop",
+      "Audit Log"
     ]
   },
   {
@@ -570,7 +642,12 @@ export const aiMaturityStages: AiMaturityStage[] = [
       "Model Context Protocol (MCP)",
       "MCP Server",
       "MCP Client",
-      "Human Approval Gate"
+      "MCP Tool",
+      "MCP Resource",
+      "MCP Prompt",
+      "Connector",
+      "Human Approval Gate",
+      "Memory"
     ]
   },
   {

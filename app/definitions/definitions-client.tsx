@@ -24,7 +24,7 @@ export function DefinitionsClient() {
   const [category, setCategory] = useState<DefinitionCategory | "All">("All");
   const [activeStageId, setActiveStageId] = useState<ActiveStage>(aiMaturityStages[0].id);
   const [expanded, setExpanded] = useState<string>(aiDefinitions[0].term);
-  const [reviewed, setReviewed] = useState<Set<string>>(new Set([aiDefinitions[0].term]));
+  const [reviewed, setReviewed] = useState<Set<string>>(new Set());
   const [storageKey, setStorageKey] = useState("ai-academy-reviewed-terms");
   const [hasLoadedProgress, setHasLoadedProgress] = useState(false);
 
@@ -41,17 +41,20 @@ export function DefinitionsClient() {
     });
   }, [activeStage, definitionsByTerm]);
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const isSearching = normalizedQuery.length > 0;
+  const visibleDefinitions = isSearching ? aiDefinitions : stageDefinitions;
+
   const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return stageDefinitions.filter((definition) => {
+    return visibleDefinitions.filter((definition) => {
       const categoryMatch = category === "All" || definition.category === category;
       const queryMatch = [definition.term, definition.technical, definition.plain, definition.analogy, definition.workplaceExample]
         .join(" ")
         .toLowerCase()
-        .includes(normalized);
+        .includes(normalizedQuery);
       return categoryMatch && queryMatch;
     });
-  }, [category, query, stageDefinitions]);
+  }, [category, normalizedQuery, visibleDefinitions]);
 
   const activeReviewedCount = stageDefinitions.filter((definition) => reviewed.has(definition.term)).length;
   const activeProgress = stageDefinitions.length ? Math.round((activeReviewedCount / stageDefinitions.length) * 100) : 0;
@@ -77,9 +80,9 @@ export function DefinitionsClient() {
     if (saved) {
       try {
         const terms = JSON.parse(saved) as string[];
-        setReviewed(new Set([aiDefinitions[0].term, ...terms]));
+        setReviewed(new Set(terms));
       } catch {
-        setReviewed(new Set([aiDefinitions[0].term]));
+        setReviewed(new Set());
       }
     }
     setHasLoadedProgress(true);
@@ -97,7 +100,6 @@ export function DefinitionsClient() {
       setCategory("All");
       setQuery("");
       setExpanded(next.terms[0]);
-      setReviewed((current) => new Set(current).add(next.terms[0]));
     }
   };
 
@@ -150,7 +152,6 @@ export function DefinitionsClient() {
                     setCategory("All");
                     setQuery("");
                     setExpanded(stage.terms[0]);
-                    setReviewed((current) => new Set(current).add(stage.terms[0]));
                   }}
                   className={cn(
                     "relative min-h-44 rounded-md border p-4 text-left transition",
@@ -184,9 +185,13 @@ export function DefinitionsClient() {
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{activeStage ? activeStage.level : "Reference mode"}</p>
-              <h3 className="mt-1 text-2xl font-semibold text-slate-950">{activeStage ? activeStage.title : "Full Definitions Library"}</h3>
+              <h3 className="mt-1 text-2xl font-semibold text-slate-950">{isSearching ? "Search Results" : activeStage ? activeStage.title : "Full Definitions Library"}</h3>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                {activeStage ? activeStage.description : "Search every definition across the full library when you need a quick answer."}
+                {isSearching
+                  ? "Searching the full definitions library across every maturity level."
+                  : activeStage
+                    ? activeStage.description
+                    : "Search every definition across the full library when you need a quick answer."}
               </p>
             </div>
             <button
@@ -208,7 +213,7 @@ export function DefinitionsClient() {
             <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${activeProgress}%` }} />
           </div>
           <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-            {activeReviewedCount} of {stageDefinitions.length} cards collected in this view
+            {isSearching ? `${filtered.length} matching cards across the full library` : `${activeReviewedCount} of ${stageDefinitions.length} cards collected in this view`}
           </p>
         </div>
 
@@ -229,7 +234,7 @@ export function DefinitionsClient() {
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="relative max-w-2xl flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search this level for MCP, RAG, agents, prompt injection..." className="pl-10" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search the full library for MCP, RAG, agents, prompt injection..." className="pl-10" />
           </div>
           <div className="flex flex-wrap gap-2">
             {(["All", ...definitionCategories] as const).map((item) => (
@@ -306,7 +311,7 @@ export function DefinitionsClient() {
 
       {!filtered.length && (
         <div className="rounded-lg border bg-white p-8 text-center text-sm text-slate-600">
-          No definitions match that search in this level. Try full-library mode or clear the filter.
+          No definitions match that search. Try another term, acronym, or category.
         </div>
       )}
     </div>
