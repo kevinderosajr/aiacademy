@@ -470,3 +470,131 @@ export const aiDefinitions: AiDefinition[] = [
 ];
 
 export const definitionCategories: DefinitionCategory[] = ["Foundations", "Prompting", "Safety", "Data", "Automation", "Evaluation"];
+
+export type AiMaturityStage = {
+  id: string;
+  level: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  checkpoint: string;
+  terms: string[];
+};
+
+export const aiMaturityStages: AiMaturityStage[] = [
+  {
+    id: "ai-infancy",
+    level: "Level 1",
+    title: "AI Infancy",
+    shortTitle: "Infancy",
+    description: "Build the basic language of AI so every later concept has a place to land.",
+    checkpoint: "You can explain what AI, ML, LLMs, tokens, and context windows are without jargon.",
+    terms: [
+      "Artificial Intelligence (AI)",
+      "Machine Learning",
+      "Large Language Model (LLM)",
+      "Generative AI",
+      "Token",
+      "Context Window"
+    ]
+  },
+  {
+    id: "prompt-explorer",
+    level: "Level 2",
+    title: "Prompt Explorer",
+    shortTitle: "Prompting",
+    description: "Move from asking questions to giving AI clear roles, constraints, examples, and success criteria.",
+    checkpoint: "You can write prompts that include role, task, context, constraints, examples, and output format.",
+    terms: [
+      "Prompt",
+      "Prompt Engineering",
+      "System Prompt",
+      "Few-Shot Prompting",
+      "Chain-of-Thought",
+      "Temperature"
+    ]
+  },
+  {
+    id: "data-retrieval-builder",
+    level: "Level 3",
+    title: "Data and Retrieval Builder",
+    shortTitle: "Data/RAG",
+    description: "Learn how AI finds approved knowledge, represents meaning, and stays grounded in source material.",
+    checkpoint: "You can describe how RAG, embeddings, vector search, chunking, and grounding work together.",
+    terms: [
+      "Retrieval Augmented Generation (RAG)",
+      "Embedding",
+      "Vector Database",
+      "Semantic Search",
+      "Chunking",
+      "Knowledge Graph",
+      "Fine-tuning",
+      "Grounding"
+    ]
+  },
+  {
+    id: "safety-operator",
+    level: "Level 4",
+    title: "Safety Operator",
+    shortTitle: "Safety",
+    description: "Add the judgment layer: data handling, review gates, misuse testing, and secure AI behavior.",
+    checkpoint: "You can spot sensitive data risks, hallucinations, prompt injection, and places where humans must approve.",
+    terms: [
+      "Hallucination",
+      "Guardrails",
+      "Data Classification",
+      "PII",
+      "Sensitive Data",
+      "Data Leakage",
+      "Prompt Injection",
+      "Indirect Prompt Injection",
+      "Jailbreak",
+      "Red Teaming",
+      "Least Privilege",
+      "Human-in-the-Loop"
+    ]
+  },
+  {
+    id: "agentic-builder",
+    level: "Level 5",
+    title: "Agentic Builder",
+    shortTitle: "Agents",
+    description: "Connect models to tools so AI can complete controlled, multi-step work instead of only answering.",
+    checkpoint: "You can explain the difference between a chatbot, a tool-calling assistant, and an AI agent.",
+    terms: [
+      "AI Agent",
+      "Agentic Workflow",
+      "Tool Calling",
+      "Function Calling",
+      "API",
+      "Model Context Protocol (MCP)",
+      "MCP Server",
+      "MCP Client",
+      "Human Approval Gate"
+    ]
+  },
+  {
+    id: "orchestration-lead",
+    level: "Level 6",
+    title: "Orchestration Lead",
+    shortTitle: "Orchestration",
+    description: "Coordinate models, tools, workflows, tests, cost, and quality into reliable business systems.",
+    checkpoint: "You can design an AI workflow with evaluation, regression tests, rate limits, cost awareness, and drift monitoring.",
+    terms: [
+      "Orchestration",
+      "Workflow Automation",
+      "Model Evaluation",
+      "Eval Dataset",
+      "Golden Answer",
+      "Regression Test",
+      "Benchmark",
+      "Precision",
+      "Recall",
+      "F1 Score",
+      "Latency",
+      "Rate Limit",
+      "Cost per Token",
+      "Model Drift"
+    ]
+  }
+];
