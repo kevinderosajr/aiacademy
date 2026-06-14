@@ -174,12 +174,12 @@ export function LandingClient() {
 
         <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-7 lg:px-8">
           <nav className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-28 items-center justify-center rounded-sm bg-white px-3 shadow-[0_0_34px_rgba(0,164,255,0.28)]">
-                <img src="/axon-logo.png" alt="Axon" className="h-5 w-auto object-contain" />
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-44 items-center justify-center rounded-sm bg-white px-5 shadow-[0_0_34px_rgba(0,164,255,0.28)]">
+                <img src="/axon-logo-cropped.png" alt="Axon" className="h-8 w-auto object-contain" />
               </div>
-              <span className="hidden h-6 w-px bg-white/25 sm:block" />
-              <span className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-200">AI Academy</span>
+              <span className="hidden h-8 w-px bg-white/25 sm:block" />
+              <span className="text-base font-semibold uppercase tracking-[0.22em] text-slate-200">AI Academy</span>
             </div>
             {session ? (
               <button onClick={signOut} className="rounded-sm border border-white/25 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-300 hover:bg-cyan-300/10">
