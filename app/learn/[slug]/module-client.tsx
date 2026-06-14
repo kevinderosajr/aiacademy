@@ -53,7 +53,7 @@ function FlipCard({
       )}
     >
       <div className="flex items-center justify-between gap-3">
-        <Badge className={flipped ? "border-blue-200 bg-white text-blue-800" : "bg-slate-50 text-slate-600"}>{flipped ? "Revealed" : "Tap to flip"}</Badge>
+        <Badge className={flipped ? "border-blue-200 bg-white text-blue-800" : "bg-slate-50 text-slate-600"}>{flipped ? "Reviewed" : "Tap to reveal"}</Badge>
         <RotateCcw size={16} className={flipped ? "text-blue-700" : "text-slate-400"} />
       </div>
       <h3 className="mt-4 text-lg font-semibold text-slate-950">{title}</h3>
@@ -93,15 +93,14 @@ export function ModuleClient({
   const quizCorrect = questions.filter((question) => answers[question.id] === question.answer).length;
   const score = questions.length ? Math.round((quizCorrect / questions.length) * 100) : 0;
   const xp = Math.min(100, flipCount * 8 + scenarioCount * 10 + quizCorrect * 15 + (completed ? 20 : 0));
-  const progress = completed ? 100 : Math.round(((step + 1) / steps.length) * 100);
 
   function flip(id: string) {
-    setFlipped((current) => ({ ...current, [id]: !current[id] }));
+    setFlipped((current) => ({ ...current, [id]: true }));
   }
 
   function next() {
     if (step < steps.length - 1) setStep(step + 1);
-    else setCompleted(true);
+    else if (canCompleteMission) setCompleted(true);
   }
 
   function previous() {
@@ -146,6 +145,21 @@ export function ModuleClient({
       ]
     : [];
 
+  const overviewCardIds = overviewCards.map((_, index) => `overview-${index}`);
+  const lessonCardIds = (lesson: Lesson) => [0, 1, 2].map((index) => `lesson-${lesson.id}-${index}`);
+  const isStepComplete = (index: number) => {
+    if (completed) return true;
+    if (index === 0) return overviewCardIds.every((id) => flipped[id]);
+    if (index === steps.length - 1) return questions.length > 0 && questions.every((question) => answers[question.id]) && score === 100;
+
+    const lesson = lessons[index - 1];
+    if (!lesson) return false;
+    return lessonCardIds(lesson).every((id) => flipped[id]) && Boolean(scenarioAnswers[lesson.id]);
+  };
+  const completedStepCount = steps.filter((_, index) => isStepComplete(index)).length;
+  const progress = completed ? 100 : Math.round((completedStepCount / steps.length) * 100);
+  const canCompleteMission = questions.length === 0 || (questions.every((question) => answers[question.id]) && score === 100);
+
   return (
     <div className="grid gap-6 xl:grid-cols-[300px_1fr]">
       <aside className="space-y-4">
@@ -183,8 +197,13 @@ export function ModuleClient({
                 step === index ? "bg-blue-50 text-blue-800" : "text-slate-600 hover:bg-slate-50"
               )}
             >
-              <span className={cn("flex size-6 items-center justify-center rounded-full border text-xs", step >= index || completed ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300")}>
-                {step > index || completed ? <CheckCircle2 size={14} /> : index + 1}
+              <span
+                className={cn(
+                  "flex size-6 items-center justify-center rounded-full border text-xs",
+                  isStepComplete(index) ? "border-blue-600 bg-blue-600 text-white" : step === index ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300"
+                )}
+              >
+                {isStepComplete(index) ? <CheckCircle2 size={14} /> : index + 1}
               </span>
               {label}
             </button>
@@ -196,8 +215,8 @@ export function ModuleClient({
             Badge criteria
           </div>
           <ul className="mt-3 space-y-2 text-xs leading-5 text-slate-600">
-            <li>Flip at least 3 cards.</li>
-            <li>Make at least 2 scenario calls.</li>
+            <li>Reveal the cards inside each stage.</li>
+            <li>Make the scenario call inside each lesson.</li>
             <li>Score 100% on the boss check.</li>
           </ul>
         </div>
@@ -358,9 +377,14 @@ export function ModuleClient({
           <Button variant="outline" onClick={previous} disabled={step === 0}>
             <ChevronLeft size={16} /> Back
           </Button>
-          <Button onClick={next}>
+          <div className="flex flex-col items-end gap-2">
+            {step === steps.length - 1 && !canCompleteMission && (
+              <p className="text-right text-xs text-slate-500">Answer every boss check correctly to complete the mission.</p>
+            )}
+          <Button onClick={next} disabled={step === steps.length - 1 && !canCompleteMission}>
             {step === steps.length - 1 ? "Complete mission" : "Continue"} <ChevronRight size={16} />
           </Button>
+          </div>
         </div>
       </section>
     </div>
