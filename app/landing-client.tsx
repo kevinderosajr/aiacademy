@@ -316,7 +316,7 @@ export function LandingClient() {
                 Sign out
               </button>
             ) : (
-              <Link href="/definitions" className="rounded-sm border border-cyan-300/60 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-300 hover:text-black">
+              <Link href="/dashboard" className="rounded-sm border border-cyan-300/60 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-300 hover:text-black">
                 Preview path
               </Link>
             )}
@@ -451,10 +451,10 @@ export function LandingClient() {
                 </div>
 
                 <div className="mt-5 space-y-3">
-                  <JourneyLink href="/definitions" icon={<Sparkles size={17} />} title="Continue maturity board" note={`Collect remaining terms in ${currentStage.shortTitle}.`} />
+                  <JourneyLink href="/dashboard" icon={<Sparkles size={17} />} title="Open maturity dashboard" note={`Collect remaining terms in ${currentStage.shortTitle}.`} />
                   <JourneyLink href={currentAction.href} icon={<CheckCircle2 size={17} />} title={currentAction.label} note={currentAction.note} />
                   <JourneyLink href="/playbook" icon={<ShieldCheck size={17} />} title="Review the AI playbook" note="Use approved recipes, templates, and safety checklists." />
-                  <JourneyLink href="/dashboard" icon={<Lock size={17} />} title="Open full studio" note="See learning progress, submitted ideas, and recommended actions." />
+                  <JourneyLink href="/definitions" icon={<Lock size={17} />} title="Use definitions library" note="Look up technical terms, analogies, examples, and safety notes." />
                 </div>
               </section>
             )}
