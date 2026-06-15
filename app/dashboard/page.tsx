@@ -7,7 +7,7 @@ export default function DashboardPage() {
       title="AI Maturity Dashboard"
       description="Your guided board for moving from AI fundamentals to prompting, data grounding, safety, agents, and orchestration."
     >
-      <DefinitionsClient />
+      <DefinitionsClient mode="dashboard" />
     </PageShell>
   );
 }

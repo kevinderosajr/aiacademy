@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CheckCircle2, Lightbulb, Search, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,7 @@ import { aiDefinitions, aiMaturityStages, definitionCategories, type DefinitionC
 import { cn } from "@/lib/utils";
 
 type ActiveStage = string | "all";
+type DefinitionsClientMode = "definitions" | "dashboard";
 
 const stageTone = [
   "from-cyan-400 to-blue-500",
@@ -19,10 +21,10 @@ const stageTone = [
   "from-white to-cyan-300"
 ];
 
-export function DefinitionsClient() {
+export function DefinitionsClient({ mode = "definitions" }: { mode?: DefinitionsClientMode }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<DefinitionCategory | "All">("All");
-  const [activeStageId, setActiveStageId] = useState<ActiveStage>(aiMaturityStages[0].id);
+  const [activeStageId, setActiveStageId] = useState<ActiveStage>(mode === "dashboard" ? aiMaturityStages[0].id : "all");
   const [expanded, setExpanded] = useState<string>(aiDefinitions[0].term);
   const [reviewed, setReviewed] = useState<Set<string>>(new Set());
   const [storageKey, setStorageKey] = useState("ai-academy-reviewed-terms");
@@ -103,130 +105,144 @@ export function DefinitionsClient() {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <section className="overflow-hidden rounded-lg border border-slate-800 bg-black text-white shadow-soft">
-        <div className="border-b border-cyan-300/20 bg-[radial-gradient(circle_at_top_right,rgba(0,163,255,0.22),transparent_36%),linear-gradient(135deg,#020617,#05070b_52%,#08111f)] p-5">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-300">AI maturity board</p>
-              <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-normal">Move from AI basics to agentic orchestration</h2>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-                Follow the path, click each stop, and collect terms as you review them. The journey starts with plain-English AI basics and ends with connected, measured, human-approved workflows.
-              </p>
-            </div>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="rounded-md border border-white/10 bg-white/10 p-3">
-                <p className="text-2xl font-semibold">{aiDefinitions.length}</p>
-                <p className="text-xs text-slate-300">terms</p>
-              </div>
-              <div className="rounded-md border border-white/10 bg-white/10 p-3">
-                <p className="text-2xl font-semibold">{aiMaturityStages.length}</p>
-                <p className="text-xs text-slate-300">levels</p>
-              </div>
-              <div className="rounded-md border border-cyan-300/30 bg-cyan-300/10 p-3">
-                <p className="text-2xl font-semibold">{journeyProgress}%</p>
-                <p className="text-xs text-slate-300">collected</p>
-              </div>
-            </div>
+  const boardSection = (
+    <section className="overflow-hidden rounded-lg border border-slate-800 bg-black text-white shadow-soft">
+      <div className="border-b border-cyan-300/20 bg-[radial-gradient(circle_at_top_right,rgba(0,163,255,0.22),transparent_36%),linear-gradient(135deg,#020617,#05070b_52%,#08111f)] p-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-cyan-300">AI maturity board</p>
+            <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-normal">Move from AI basics to agentic orchestration</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
+              Follow the path from plain-English AI basics to connected, measured, human-approved workflows.
+            </p>
           </div>
-
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${journeyProgress}%` }} />
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="rounded-md border border-white/10 bg-white/10 p-3">
+              <p className="text-2xl font-semibold">{aiDefinitions.length}</p>
+              <p className="text-xs text-slate-300">terms</p>
+            </div>
+            <div className="rounded-md border border-white/10 bg-white/10 p-3">
+              <p className="text-2xl font-semibold">{aiMaturityStages.length}</p>
+              <p className="text-xs text-slate-300">levels</p>
+            </div>
+            <div className="rounded-md border border-cyan-300/30 bg-cyan-300/10 p-3">
+              <p className="text-2xl font-semibold">{journeyProgress}%</p>
+              <p className="text-xs text-slate-300">collected</p>
+            </div>
           </div>
         </div>
 
-        <div className="relative p-4">
-          <div className="absolute left-8 right-8 top-[5.25rem] hidden h-px bg-cyan-300/25 lg:block" />
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-            {aiMaturityStages.map((stage, index) => {
-              const isActive = stage.id === activeStageId;
-              const stageReviewed = stage.terms.filter((term) => reviewed.has(term)).length;
-              const isStarted = stageReviewed > 0;
-              const isComplete = stageReviewed === stage.terms.length;
-              return (
-                <button
-                  key={stage.id}
-                  onClick={() => {
-                    setActiveStageId(stage.id);
-                    setCategory("All");
-                    setQuery("");
-                    setExpanded(stage.terms[0]);
-                  }}
-                  className={cn(
-                    "relative min-h-44 rounded-md border p-4 text-left transition",
-                    isActive ? "border-cyan-300 bg-white text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.22)]" : "border-white/10 bg-white/[0.06] hover:border-cyan-300/60 hover:bg-white/[0.1]"
-                  )}
-                >
-                  <div className={cn("mb-4 flex size-12 items-center justify-center rounded-full bg-gradient-to-br text-base font-semibold text-black", stageTone[index])}>
-                    {index + 1}
-                  </div>
-                  <p className={cn("text-xs font-semibold uppercase tracking-[0.18em]", isActive ? "text-blue-700" : "text-cyan-200")}>{stage.level}</p>
-                  <h3 className="mt-1 text-lg font-semibold">{stage.title}</h3>
-                  <p className={cn("mt-2 min-h-12 text-xs leading-5", isActive ? "text-slate-600" : "text-slate-300")}>{stage.description}</p>
-                  <div className="mt-4 flex items-center justify-between gap-2 text-xs font-semibold">
-                    <span className={cn("rounded-full border px-2 py-1", isActive ? "border-slate-200 text-slate-600" : "border-white/10 text-slate-300")}>
-                      {stageReviewed}/{stage.terms.length} collected
-                    </span>
-                    <span className={cn("flex items-center gap-1", isComplete ? "text-emerald-500" : isStarted ? "text-cyan-300" : isActive ? "text-slate-500" : "text-slate-400")}>
-                      {isComplete && <CheckCircle2 size={14} />}
-                      {isComplete ? "Complete" : isActive ? "You are here" : isStarted ? "Started" : "Next stop"}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${journeyProgress}%` }} />
         </div>
-      </section>
+      </div>
 
-      <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-lg border bg-white p-4 shadow-sm">
-          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{activeStage ? activeStage.level : "Reference mode"}</p>
-              <h3 className="mt-1 text-2xl font-semibold text-slate-950">{isSearching ? "Search Results" : activeStage ? activeStage.title : "Full Definitions Library"}</h3>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                {isSearching
-                  ? "Searching the full definitions library across every maturity level."
-                  : activeStage
-                    ? activeStage.description
-                    : "Search every definition across the full library when you need a quick answer."}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setActiveStageId("all");
-                setCategory("All");
-                setQuery("");
-              }}
-              className={cn(
-                "h-10 rounded-md border px-4 text-sm font-semibold",
-                activeStageId === "all" ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-700"
-              )}
-            >
-              Full library
-            </button>
-          </div>
+      <div className="relative p-4">
+        <div className="absolute left-8 right-8 top-[5.25rem] hidden h-px bg-cyan-300/25 lg:block" />
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+          {aiMaturityStages.map((stage, index) => {
+            const isActive = stage.id === activeStageId;
+            const stageReviewed = stage.terms.filter((term) => reviewed.has(term)).length;
+            const isStarted = stageReviewed > 0;
+            const isComplete = stageReviewed === stage.terms.length;
+            return (
+              <button
+                key={stage.id}
+                onClick={() => {
+                  setActiveStageId(stage.id);
+                  setCategory("All");
+                  setQuery("");
+                  setExpanded(stage.terms[0]);
+                }}
+                className={cn(
+                  "relative min-h-44 rounded-md border p-4 text-left transition",
+                  isActive ? "border-cyan-300 bg-white text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.22)]" : "border-white/10 bg-white/[0.06] hover:border-cyan-300/60 hover:bg-white/[0.1]"
+                )}
+              >
+                <div className={cn("mb-4 flex size-12 items-center justify-center rounded-full bg-gradient-to-br text-base font-semibold text-black", stageTone[index])}>
+                  {index + 1}
+                </div>
+                <p className={cn("text-xs font-semibold uppercase tracking-[0.18em]", isActive ? "text-blue-700" : "text-cyan-200")}>{stage.level}</p>
+                <h3 className="mt-1 text-lg font-semibold">{stage.title}</h3>
+                <p className={cn("mt-2 min-h-12 text-xs leading-5", isActive ? "text-slate-600" : "text-slate-300")}>{stage.description}</p>
+                <div className="mt-4 flex items-center justify-between gap-2 text-xs font-semibold">
+                  <span className={cn("rounded-full border px-2 py-1", isActive ? "border-slate-200 text-slate-600" : "border-white/10 text-slate-300")}>
+                    {stageReviewed}/{stage.terms.length} collected
+                  </span>
+                  <span className={cn("flex items-center gap-1", isComplete ? "text-emerald-500" : isStarted ? "text-cyan-300" : isActive ? "text-slate-500" : "text-slate-400")}>
+                    {isComplete && <CheckCircle2 size={14} />}
+                    {isComplete ? "Complete" : isActive ? "You are here" : isStarted ? "Started" : "Next stop"}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${activeProgress}%` }} />
-          </div>
-          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-            {isSearching ? `${filtered.length} matching cards across the full library` : `${activeReviewedCount} of ${stageDefinitions.length} cards collected in this view`}
+  const checkpointSection = (
+    <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="rounded-lg border bg-white p-4 shadow-sm">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">{activeStage ? activeStage.level : "Reference mode"}</p>
+          <h3 className="mt-1 text-2xl font-semibold text-slate-950">{activeStage ? activeStage.title : "Full Definitions Library"}</h3>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            {activeStage?.description ?? "Use the definitions library for lookup, then return to the dashboard to keep progressing through the maturity path."}
           </p>
         </div>
 
-        <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Checkpoint</p>
-          <p className="mt-2 text-sm leading-6 text-cyan-950">
-            {activeStage?.checkpoint ?? "Use full-library mode for lookup, then return to a stage to keep progressing through the maturity path."}
-          </p>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${activeProgress}%` }} />
+        </div>
+        <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+          {activeReviewedCount} of {stageDefinitions.length} cards collected in this level
+        </p>
+      </div>
+
+      <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-800">Checkpoint</p>
+        <p className="mt-2 text-sm leading-6 text-cyan-950">
+          {activeStage?.checkpoint ?? "Pick a stage on the maturity board to see its checkpoint."}
+        </p>
+        <div className="mt-4 grid gap-2">
           {activeStage && activeStageIndex < aiMaturityStages.length - 1 && (
-            <button onClick={nextStage} className="mt-4 h-10 w-full rounded-md bg-black px-4 text-sm font-semibold text-white hover:bg-slate-800">
+            <button onClick={nextStage} className="h-10 w-full rounded-md bg-black px-4 text-sm font-semibold text-white hover:bg-slate-800">
               Advance to {aiMaturityStages[activeStageIndex + 1].shortTitle}
             </button>
           )}
+          <Link href="/definitions" className="flex h-10 items-center justify-center rounded-md border border-cyan-300 bg-white px-4 text-sm font-semibold text-cyan-950 hover:border-cyan-500">
+            Open definitions library
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+
+  if (mode === "dashboard") {
+    return (
+      <div className="space-y-6">
+        {boardSection}
+        {checkpointSection}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <section className="rounded-lg border bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Full library</p>
+            <h3 className="mt-1 text-2xl font-semibold text-slate-950">{isSearching ? "Search Results" : "All AI Definitions"}</h3>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Search every definition across the full library when you need a technical definition, plain-English version, analogy, workplace example, or safety note.
+            </p>
+          </div>
+          <Link href="/dashboard" className="flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700">
+            Back to maturity dashboard
+          </Link>
         </div>
       </section>
 
