@@ -170,6 +170,28 @@ export function LandingClient() {
   const currentStage = aiMaturityStages[currentStageIndex];
   const currentStageReviewed = currentStage.terms.filter((term) => reviewedTerms.includes(term)).length;
   const currentAction = stageActions[currentStage.id];
+  const isAssessing = Boolean(session && !assessment);
+  const heroTitle = !session
+    ? "Start your AI maturity journey."
+    : isAssessing
+      ? "Calibrate your AI path in under a minute."
+      : "Your next AI move is ready.";
+  const heroCopy = !session
+    ? "Create a lightweight academy profile, return to saved progress, and get a clear next move across lessons, definitions, playbooks, and applied AI workflows."
+    : isAssessing
+      ? "Answer five quick checkpoints so the academy can place you at the right maturity level and recommend the first lesson that actually fits."
+      : "Continue from your current maturity level with a guided path across definitions, lessons, playbooks, and applied workflows.";
+  const heroStats = isAssessing
+    ? [
+        { value: assessmentQuestions.length.toString(), label: "quick taps" },
+        { value: "<1", label: "minute" },
+        { value: "1", label: "guided path" }
+      ]
+    : [
+        { value: aiMaturityStages.length.toString(), label: "maturity levels" },
+        { value: aiDefinitions.length.toString(), label: "AI terms" },
+        { value: "0", label: "typing-heavy tasks" }
+      ];
 
   useEffect(() => {
     const activeSession = loadSession();
@@ -275,18 +297,19 @@ export function LandingClient() {
   return (
     <main className="min-h-screen bg-black text-white">
       <section className="relative min-h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/ai-command-center-hero.png')] bg-cover bg-center opacity-80" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.98)_0%,rgba(0,0,0,0.92)_42%,rgba(0,57,145,0.42)_72%,rgba(0,181,255,0.16)_100%)]" />
+        <div className="absolute inset-0 bg-[url('/ai-command-center-hero.png')] bg-cover bg-center opacity-55" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.98)_0%,rgba(0,0,0,0.94)_48%,rgba(0,22,54,0.82)_72%,rgba(4,143,184,0.22)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(91,221,245,0.18),transparent_26%),radial-gradient(circle_at_28%_78%,rgba(46,102,246,0.16),transparent_32%)]" />
         <div className="absolute inset-x-0 top-0 h-px bg-cyan-300/70" />
 
-        <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-7 lg:px-8">
+        <div className="relative mx-auto flex min-h-screen max-w-[1180px] flex-col px-5 py-6 sm:px-8">
           <nav className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-44 items-center justify-center rounded-sm bg-white px-5 shadow-[0_0_34px_rgba(0,164,255,0.28)]">
-                <img src="/axon-logo-cropped.png" alt="Axon" className="h-8 w-auto object-contain" />
+              <div className="flex h-12 w-40 items-center justify-center rounded-sm bg-white px-5 shadow-[0_0_34px_rgba(0,164,255,0.22)] sm:h-14 sm:w-48">
+                <img src="/axon-logo-cropped.png" alt="Axon" className="h-7 w-auto object-contain sm:h-9" />
               </div>
               <span className="hidden h-8 w-px bg-white/25 sm:block" />
-              <span className="text-base font-semibold uppercase tracking-[0.22em] text-slate-200">AI Academy</span>
+              <span className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-200 sm:text-base">AI Academy</span>
             </div>
             {session ? (
               <button onClick={signOut} className="rounded-sm border border-white/25 px-4 py-2 text-sm font-semibold text-white hover:border-cyan-300 hover:bg-cyan-300/10">
@@ -299,31 +322,30 @@ export function LandingClient() {
             )}
           </nav>
 
-          <div className="grid flex-1 items-center gap-8 py-10 lg:grid-cols-[1fr_440px]">
-            <div className="max-w-3xl">
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.26em] text-cyan-300">Mission-ready AI fluency</p>
-              <h1 className="max-w-3xl text-5xl font-semibold leading-none md:text-7xl">Start your AI maturity journey.</h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-                Create a lightweight academy profile, return to your saved progress, and get a clear next move across lessons, definitions, playbooks, and applied AI workflows.
-              </p>
-              <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
-                <div className="rounded-sm border border-white/15 bg-white/[0.06] p-4 backdrop-blur">
-                  <p className="text-2xl font-semibold">{aiMaturityStages.length}</p>
-                  <p className="text-sm text-slate-300">maturity levels</p>
-                </div>
-                <div className="rounded-sm border border-white/15 bg-white/[0.06] p-4 backdrop-blur">
-                  <p className="text-2xl font-semibold">{aiDefinitions.length}</p>
-                  <p className="text-sm text-slate-300">AI terms</p>
-                </div>
-                <div className="rounded-sm border border-cyan-300/30 bg-cyan-300/10 p-4 backdrop-blur">
-                  <p className="text-2xl font-semibold">0</p>
-                  <p className="text-sm text-slate-300">typing-heavy tasks</p>
-                </div>
+          <div className="grid flex-1 items-center gap-8 py-10 lg:grid-cols-[minmax(0,1fr)_430px] lg:py-8">
+            <div className="max-w-2xl">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300 sm:text-sm">Mission-ready AI fluency</p>
+              <h1 className="text-4xl font-semibold leading-[0.98] sm:text-5xl lg:text-6xl">{heroTitle}</h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">{heroCopy}</p>
+              <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
+                {heroStats.map((stat, index) => (
+                  <div key={stat.label} className={cn("rounded-sm border bg-white/[0.055] p-4 backdrop-blur", index === 2 ? "border-cyan-300/30 bg-cyan-300/10" : "border-white/15")}>
+                    <p className="text-2xl font-semibold">{stat.value}</p>
+                    <p className="mt-1 text-sm text-slate-300">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+                {aiMaturityStages.slice(0, 4).map((stage) => (
+                  <span key={stage.id} className="rounded-full border border-white/15 bg-black/30 px-3 py-1.5">
+                    {stage.shortTitle}
+                  </span>
+                ))}
               </div>
             </div>
 
             {!session ? (
-              <section className="rounded-lg border border-white/15 bg-white/[0.08] p-5 shadow-[0_0_60px_rgba(0,163,255,0.16)] backdrop-blur-xl">
+              <section className="rounded-md border border-white/15 bg-[#0d1624]/85 p-5 shadow-[0_0_60px_rgba(0,163,255,0.16)] backdrop-blur-xl">
                 <div className="mb-5 grid grid-cols-2 rounded-md border border-white/10 bg-black/40 p-1">
                   <button
                     type="button"
@@ -452,68 +474,102 @@ function AssessmentPanel({
   onAnswer: (questionId: string, stageIndex: number) => void;
   onComplete: () => void;
 }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentQuestion = assessmentQuestions[currentIndex];
+  const selectedAnswer = answers[currentQuestion.id];
   const answeredCount = Object.keys(answers).length;
   const isComplete = answeredCount === assessmentQuestions.length;
+  const progress = Math.round((answeredCount / assessmentQuestions.length) * 100);
+
+  const chooseAnswer = (questionId: string, stageIndex: number) => {
+    onAnswer(questionId, stageIndex);
+    if (currentIndex < assessmentQuestions.length - 1) {
+      setCurrentIndex((index) => index + 1);
+    }
+  };
 
   return (
-    <section className="rounded-lg border border-white/15 bg-white/[0.08] p-5 shadow-[0_0_60px_rgba(0,163,255,0.16)] backdrop-blur-xl">
+    <section className="rounded-md border border-white/15 bg-[#0d1624]/90 p-4 shadow-[0_0_60px_rgba(0,163,255,0.16)] backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">First-login assessment</p>
-          <h2 className="mt-2 text-2xl font-semibold">Find your AI starting point</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-300">Five taps, less than a minute. No typing required.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">First-login assessment</p>
+          <h2 className="mt-2 text-2xl font-semibold leading-tight">Find your AI starting point</h2>
+          <p className="mt-1.5 text-sm leading-6 text-slate-300">Five taps. No typing required.</p>
         </div>
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-cyan-300 text-black">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-cyan-300 text-black">
           <Route size={22} />
         </div>
       </div>
 
-      <div className="mt-5 space-y-3">
-        {assessmentQuestions.map((question, index) => (
-          <div key={question.id} className="rounded-md border border-white/10 bg-black/35 p-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Checkpoint {index + 1}</p>
-            <p className="mt-1 text-sm font-semibold leading-6 text-white">{question.prompt}</p>
-            <div className="mt-3 grid gap-2">
-              {question.options.map((option) => {
-                const selected = answers[question.id] === option.stageIndex;
-                return (
-                  <button
-                    key={`${question.id}-${option.stageIndex}`}
-                    type="button"
-                    onClick={() => onAnswer(question.id, option.stageIndex)}
-                    className={cn(
-                      "rounded-sm border p-3 text-left transition",
-                      selected
-                        ? "border-cyan-300 bg-cyan-300 text-black"
-                        : "border-white/10 bg-white/[0.04] text-slate-200 hover:border-cyan-300/60 hover:bg-cyan-300/10"
-                    )}
-                  >
-                    <span className="block text-sm font-semibold">{option.label}</span>
-                    <span className={cn("mt-1 block text-xs leading-5", selected ? "text-black/75" : "text-slate-400")}>{option.description}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-5 rounded-md border border-white/10 bg-black/35 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-white">{answeredCount}/{assessmentQuestions.length} checkpoints complete</p>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Guided path next</p>
+      <div className="mt-4 rounded-md border border-white/10 bg-black/35 p-4">
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+            Checkpoint {currentIndex + 1} of {assessmentQuestions.length}
+          </p>
+          <p className="text-sm font-semibold text-cyan-300">{progress}%</p>
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${(answeredCount / assessmentQuestions.length) * 100}%` }} />
+          <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${progress}%` }} />
         </div>
-        <button
-          type="button"
-          onClick={onComplete}
-          disabled={!isComplete}
-          className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-cyan-300 px-4 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
-        >
-          Show my path <ArrowRight size={16} />
-        </button>
+
+        <div className="mt-4">
+          <p className="text-lg font-semibold leading-7 text-white">{currentQuestion.prompt}</p>
+          <div className="mt-3 grid gap-2.5">
+            {currentQuestion.options.map((option) => {
+              const selected = selectedAnswer === option.stageIndex;
+              return (
+                <button
+                  key={`${currentQuestion.id}-${option.stageIndex}`}
+                  type="button"
+                  onClick={() => chooseAnswer(currentQuestion.id, option.stageIndex)}
+                  className={cn(
+                    "rounded-sm border p-3 text-left transition",
+                    selected
+                      ? "border-cyan-300 bg-cyan-300 text-black"
+                      : "border-white/10 bg-white/[0.045] text-slate-200 hover:border-cyan-300/60 hover:bg-cyan-300/10"
+                  )}
+                >
+                  <span className="block text-sm font-semibold">{option.label}</span>
+                  <span className={cn("mt-1 block text-sm leading-5", selected ? "text-black/75" : "text-slate-400")}>{option.description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-[auto_1fr_auto] items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
+            disabled={currentIndex === 0}
+            className="h-10 rounded-sm border border-white/15 px-4 text-sm font-semibold text-slate-200 hover:border-cyan-300 hover:bg-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Back
+          </button>
+          <div className="flex justify-center gap-1.5">
+            {assessmentQuestions.map((question, index) => (
+              <button
+                key={question.id}
+                type="button"
+                onClick={() => setCurrentIndex(index)}
+                className={cn(
+                  "size-2.5 rounded-full transition",
+                  index === currentIndex ? "bg-cyan-300" : answers[question.id] !== undefined ? "bg-cyan-300/45" : "bg-white/20"
+                )}
+                aria-label={`Go to checkpoint ${index + 1}`}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={onComplete}
+            disabled={!isComplete}
+            className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-sm bg-cyan-300 px-4 text-sm font-semibold text-black hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+          >
+            Show path <ArrowRight size={16} />
+          </button>
+        </div>
+        <p className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{answeredCount}/{assessmentQuestions.length} taps complete</p>
       </div>
     </section>
   );
